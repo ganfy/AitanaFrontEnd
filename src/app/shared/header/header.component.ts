@@ -1,12 +1,20 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-header',
+  selector: 'shared-header',
   standalone: true,
-  imports: [],
+  imports: [RouterModule, CommonModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
+
+  isMenuOpen = false; // Variable para controlar el estado del menú
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen; // Alternar el estado del menú
+  }
 
 }

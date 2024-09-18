@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { HeaderComponent } from "../../shared/header/header.component";
 
 @Component({
-  selector: 'app-contact-us',
+  selector: 'app-about-us',
   standalone: true,
   imports: [HeaderComponent],
-  templateUrl: './contact-us.component.html',
-  styleUrl: './contact-us.component.css'
+  templateUrl: './about-us.component.html',
+  styleUrl: './about-us.component.css'
 })
-export class ContactUsComponent {
+export class AboutUsComponent {
 
 }
