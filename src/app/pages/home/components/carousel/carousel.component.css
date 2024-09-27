@@ -1,5 +1,5 @@
 .carousel-item {
-    height: 600px; /* O ajusta el tamaño según sea necesario */
+    height: cover; /* O ajusta el tamaño según sea necesario */
   }
   .carousel-item img {
     width: 100%;
