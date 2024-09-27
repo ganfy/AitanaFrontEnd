@@ -12,9 +12,15 @@ import { RouterModule } from '@angular/router';
 export class HeaderComponent {
 
   isMenuOpen = false; // Variable para controlar el estado del menú
+  isMenuMobileOpen = false;
+
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen; // Alternar el estado del menú
+  }
+
+  toggleMobileMenu(){
+    this.isMenuMobileOpen =!this.isMenuMobileOpen;
   }
 
 }
