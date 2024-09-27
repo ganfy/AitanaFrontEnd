@@ -17,6 +17,7 @@ import { getDatabase, ref, get, set } from 'firebase/database';
 export class ChatComponent implements OnInit {
   messages: { text: string, user: string }[] = [];
   userMessage: string = '';
+  canSendMessage: boolean = true;
   private database: any;
 
   @ViewChild('chatContainer', { static: false }) chatContainer!: ElementRef;
@@ -32,7 +33,10 @@ export class ChatComponent implements OnInit {
   }
 
   sendMessage() {
-    if (this.userMessage.trim()) {
+    if (this.userMessage.trim() && this.canSendMessage) {
+
+      this.canSendMessage = false;
+
       this.messages.push({ text: this.userMessage, user: 'user' });
       console.log(this.messages);
       this.actualizarMensaje(this.userMessage);
@@ -62,10 +66,8 @@ export class ChatComponent implements OnInit {
 
   // Recibir mensaje desde Firebase
   private async recibirMsj() {
-    await this.delay(8000);
     const respuestaRef = ref(this.database, 'respuesta');
-
-
+    
     get(respuestaRef).then((snapshot) => {
       if (snapshot.exists()) {
         const mensaje = snapshot.val().anwser; // Cambia 'answer' por la clave que estás buscando
@@ -73,11 +75,15 @@ export class ChatComponent implements OnInit {
         console.log("Mensaje:", mensaje);
         // Agrega la respuesta de Aitana a los mensajes
         this.messages.push({ text: this.generateAitanaResponse(mensaje), user: 'aitana' });
+        
+        this.canSendMessage = true;
+
       } else {
         console.log("No hay datos disponibles");
       }
     }).catch((error) => {
       console.error("Error al obtener los datos:", error);
+      this.canSendMessage = true;
     });
   }
 

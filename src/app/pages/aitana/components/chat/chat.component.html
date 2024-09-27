@@ -20,9 +20,10 @@
              placeholder="Escribe tu mensaje..." 
              (keydown.enter)="sendMessage()" />
       <button (click)="sendMessage()"
+              [disabled]="!canSendMessage"
               class="bg-purple-500 text-white p-2 rounded-r-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-blue-200">
           Enviar
-      </button>
+      </button> 
   </div>
 </div>
   
