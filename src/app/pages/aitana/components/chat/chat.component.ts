@@ -1,8 +1,9 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { environment } from '../../../../../environments/environment';
-
+import  {env}  from '../../../../../environments/environment';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, get, set } from 'firebase/database';
 
 
 @Component({
@@ -12,44 +13,84 @@ import { environment } from '../../../../../environments/environment';
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
 })
-export class ChatComponent {
-    messages: { text: string, user: string }[] = [];
-    userMessage: string = '';
 
-    @ViewChild('chatContainer', { static: false }) chatContainer!: ElementRef;
+export class ChatComponent implements OnInit {
+  messages: { text: string, user: string }[] = [];
+  userMessage: string = '';
+  private database: any;
 
-    ngAfterViewChecked() {
-      this.scrollToBottom();
+  @ViewChild('chatContainer', { static: false }) chatContainer!: ElementRef;
+
+  ngOnInit() {
+      // Inicializa Firebase
+      const app = initializeApp(env.firebaseConfig);
+      this.database = getDatabase(app);
+  }
+
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
+
+  sendMessage() {
+    if (this.userMessage.trim()) {
+      this.messages.push({ text: this.userMessage, user: 'user' });
+      console.log(this.messages);
+      this.actualizarMensaje(this.userMessage);
+
+      this.recibirMsj();
+      
+      this.userMessage = '';
     }
-  
-    sendMessage() {
-      if (this.userMessage.trim()) {
-        // Agregar mensaje del usuario
-        this.messages.push({ text: this.userMessage, user: 'user' });
-  
-        // Respuesta simulada de Aitana
-        setTimeout(() => {
-          this.messages.push({
-            text: this.generateAitanaResponse(this.userMessage),
-            user: 'aitana'
-          });
-        }, 1000);
-  
-        // Limpiar el campo de entrada
-        this.userMessage = '';
+  }
+
+  generateAitanaResponse(message: string): string {
+    // Aquí puedes personalizar la respuesta si lo necesitas
+    return message;  // Esto retornará el mensaje original
+  }
+
+  scrollToBottom(): void {
+    try {
+      this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
+    } catch (err) {
+      console.error('No se pudo hacer scroll:', err);
+    }
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Recibir mensaje desde Firebase
+  private async recibirMsj() {
+    await this.delay(8000);
+    const respuestaRef = ref(this.database, 'respuesta');
+
+
+    get(respuestaRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        const mensaje = snapshot.val().anwser; // Cambia 'answer' por la clave que estás buscando
+        //const mensaje = "Hola"; // Cambia 'answer' por la clave que estás buscando
+        console.log("Mensaje:", mensaje);
+        // Agrega la respuesta de Aitana a los mensajes
+        this.messages.push({ text: this.generateAitanaResponse(mensaje), user: 'aitana' });
+      } else {
+        console.log("No hay datos disponibles");
       }
-    }
-  
-    generateAitanaResponse(message: string): string {
-      return `Aitana te responde: "${message}"`;
-    }
-    
+    }).catch((error) => {
+      console.error("Error al obtener los datos:", error);
+    });
+  }
 
-    scrollToBottom(): void {
-      try {
-        this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
-      } catch (err) {
-        console.error('No se pudo hacer scroll:', err);
-      }
-    }
+  // Función para actualizar mensaje en Firebase
+  private actualizarMensaje(msj: string) {
+    const mensajeRef = ref(this.database, 'mensaje');
+    set(mensajeRef, {
+      msg: msj,
+      Flag: true
+    }).then(() => {
+      console.log("Mensaje actualizado correctamente.");
+    }).catch((error) => {
+      console.error("Error al actualizar el mensaje:", error);
+    });
+  }
 }
