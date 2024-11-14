@@ -42,7 +42,4 @@ testem.log
 Thumbs.db
 
 
-# Tailwind CSS
-/tailwind.config.js
-
 /src/environments
